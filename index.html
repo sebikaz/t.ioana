@@ -22,6 +22,7 @@ body{
 button{
   width:100%;padding:14px;margin-top:12px;
   border-radius:12px;font-size:16px;
+  transition: all 0.2s ease; /* animare când butonul se mărește */
 }
 .yes{
   border:none;
@@ -41,19 +42,24 @@ button{
 <div class="card" id="card">
   <h1>Ioana,</h1>
   <p>vrei să fii partenera mea de Valentine’s Day? 💌</p>
-  <button class="yes" onclick="accept()">Da, vreau! 💖</button>
+  <button class="yes" id="yesBtn" onclick="accept()">Da, vreau! 💖</button>
   <button class="no" id="noBtn">Nu</button>
 </div>
 
 <script>
-const noBtn=document.getElementById("noBtn");
-const card=document.getElementById("card");
+const noBtn = document.getElementById("noBtn");
+const yesBtn = document.getElementById("yesBtn");
+const card = document.getElementById("card");
 
-noBtn.addEventListener("click",()=>{
-  const maxX=card.clientWidth-noBtn.offsetWidth;
-  const maxY=card.clientHeight-noBtn.offsetHeight;
-  noBtn.style.left=Math.random()*maxX+"px";
-  noBtn.style.top=Math.random()*maxY+"px";
+noBtn.addEventListener("click", () => {
+  // Obținem dimensiunea curentă a butonului "Da"
+  const style = window.getComputedStyle(yesBtn);
+  const currentWidth = parseFloat(style.width);
+  const currentHeight = parseFloat(style.height);
+
+  // Mărim butonul "Da" cu 20% la fiecare click
+  yesBtn.style.width = currentWidth * 1.2 + "px";
+  yesBtn.style.height = currentHeight * 1.2 + "px";
 });
 
 function accept(){
