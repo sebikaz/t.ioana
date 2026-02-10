@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Valentine’s Day 💖</title>
+<title>Valentine 💖</title>
 
 <style>
 *{
@@ -30,10 +30,12 @@ body{
   text-align:center;
   position:relative;
 }
+h1{margin-bottom:10px;}
+p{margin-bottom:20px;}
 button{
   width:100%;
   padding:14px;
-  margin-top:12px;
+  margin-top:10px;
   border-radius:12px;
   font-size:16px;
   cursor:pointer;
@@ -44,10 +46,10 @@ button{
   color:#fff;
 }
 .no{
-  position:absolute;
   background:transparent;
   border:1px solid rgba(255,255,255,.3);
   color:#fff;
+  position:absolute;
 }
 .confetti{
   position:absolute;
@@ -64,14 +66,8 @@ button{
   }
 }
 @keyframes popIn{
-  from{
-    transform:scale(.8);
-    opacity:0;
-  }
-  to{
-    transform:scale(1);
-    opacity:1;
-  }
+  from{transform:scale(.8);opacity:0;}
+  to{transform:scale(1);opacity:1;}
 }
 .credit{
   position:fixed;
@@ -79,55 +75,100 @@ button{
   right:10px;
   font-size:12px;
   color:rgba(255,255,255,.6);
-  font-style:italic;
 }
 </style>
 </head>
 
 <body>
 
-<div class="card" id="card">
-  <h1>Ioana,</h1>
-  <p>vrei să fii partenera mea de Valentine’s Day? 💌</p>
-  <button class="yes" id="yesBtn" onclick="accept()">Da, vreau! 💖</button>
-  <button class="no" id="noBtn">Nu</button>
-</div>
-
+<div class="card" id="card"></div>
 <div class="credit">made by sebi c</div>
 
 <script>
-const noBtn = document.getElementById("noBtn");
-const yesBtn = document.getElementById("yesBtn");
 const card = document.getElementById("card");
 
-function isOverlapping(a,b){
-  return !(a.right<b.left || a.left>b.right || a.bottom<b.top || a.top>b.bottom);
+let step = 0;
+
+const questions = [
+  {
+    title: "Ioana 💭",
+    text: "Pot să te întreb ceva?",
+    yes: "Da",
+    no: "Nu"
+  },
+  {
+    title: "Hmm 🤔",
+    text: "Îți place să petreci timp cu mine?",
+    yes: "Da, mult",
+    no: "Nu prea"
+  },
+  {
+    title: "Sincer acum 😌",
+    text: "M-ai alege pe mine?",
+    yes: "Normal",
+    no: "Nu știu..."
+  },
+  {
+    title: "Ultima întrebare 💘",
+    text: "Vrei să fii cu mine de Valentine’s Day?",
+    yes: "DA 💖",
+    no: "Nu"
+  }
+];
+
+function renderQuestion(){
+  const q = questions[step];
+  card.innerHTML = `
+    <h1>${q.title}</h1>
+    <p>${q.text}</p>
+    <button class="yes" onclick="nextStep()">${q.yes}</button>
+    <button class="no" id="noBtn">${q.no}</button>
+  `;
+  moveNoButton();
 }
 
-noBtn.addEventListener("click",()=>{
-  const s = getComputedStyle(yesBtn);
-  yesBtn.style.width = parseFloat(s.width)*1.2+"px";
-  yesBtn.style.height = parseFloat(s.height)*1.2+"px";
+function moveNoButton(){
+  const noBtn = document.getElementById("noBtn");
+  if(!noBtn) return;
 
-  let placed=false,tries=0;
-  while(!placed && tries<50){
-    const x=Math.random()*(card.clientWidth-noBtn.offsetWidth);
-    const y=Math.random()*(card.clientHeight-noBtn.offsetHeight);
-    noBtn.style.left=x+"px";
-    noBtn.style.top=y+"px";
+  noBtn.addEventListener("click",()=>{
+    const maxX = card.clientWidth - noBtn.offsetWidth;
+    const maxY = card.clientHeight - noBtn.offsetHeight;
+    noBtn.style.left = Math.random()*maxX + "px";
+    noBtn.style.top = Math.random()*maxY + "px";
+  });
+}
 
-    if(!isOverlapping(
-      noBtn.getBoundingClientRect(),
-      yesBtn.getBoundingClientRect()
-    )) placed=true;
-
-    tries++;
+function nextStep(){
+  step++;
+  if(step < questions.length){
+    renderQuestion();
+  } else {
+    finalScreen();
   }
-});
+}
+
+function finalScreen(){
+  card.innerHTML = `
+    <h1>Yeeey! 🥰</h1>
+    <p>Atunci e oficial…</p>
+    <p><strong>Valentine’s Day e al nostru 💖</strong></p>
+    <img src="Screenshot_4.jpg"
+         style="
+           width:100%;
+           margin-top:20px;
+           border-radius:18px;
+           box-shadow:0 10px 30px rgba(0,0,0,.4);
+           animation:popIn .6s ease-out;
+         ">
+    <p style="margin-top:15px;">Te pup sefa mea ❤️</p>
+  `;
+  createConfetti();
+}
 
 function createConfetti(){
   const colors=["#ff2d55","#ff5fa2","#ffca3a","#8ac926","#1982c4"];
-  for(let i=0;i<120;i++){
+  for(let i=0;i<150;i++){
     const c=document.createElement("div");
     c.className="confetti";
     c.style.background=colors[Math.floor(Math.random()*colors.length)];
@@ -141,21 +182,7 @@ function createConfetti(){
   }
 }
 
-function accept(){
-  card.innerHTML = `
-    <h1>Yeeey! 🥰</h1>
-    <p>Te pup sefa mea ❤️</p>
-    <img src="Screenshot_4.jpg"
-         style="
-           width:100%;
-           margin-top:20px;
-           border-radius:18px;
-           box-shadow:0 10px 30px rgba(0,0,0,.4);
-           animation:popIn .6s ease-out;
-         ">
-  `;
-  createConfetti();
-}
+renderQuestion();
 </script>
 
 </body>
