@@ -6,25 +6,37 @@
 <title>Valentine’s Day 💖</title>
 
 <style>
-*{box-sizing:border-box;font-family:'Segoe UI',sans-serif;margin:0;padding:0;}
+*{
+  box-sizing:border-box;
+  font-family:'Segoe UI',sans-serif;
+  margin:0;
+  padding:0;
+}
 body{
-  margin:0;height:100vh;
+  height:100vh;
   background:radial-gradient(circle at top,#7b1fa2,#0d0221);
-  display:flex;align-items:center;justify-content:center;
-  color:#fff;overflow:hidden;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#fff;
+  overflow:hidden;
 }
 .card{
-  width:90%;max-width:420px;
+  width:90%;
+  max-width:420px;
   background:rgba(255,255,255,.08);
-  border-radius:20px;padding:30px;
-  text-align:center;position:relative;
+  border-radius:20px;
+  padding:30px;
+  text-align:center;
+  position:relative;
 }
 button{
-  width:100%;padding:14px;margin-top:12px;
-  border-radius:12px;font-size:16px;
-  transition: all 0.2s ease;
+  width:100%;
+  padding:14px;
+  margin-top:12px;
+  border-radius:12px;
+  font-size:16px;
   cursor:pointer;
-  touch-action: manipulation;
 }
 .yes{
   border:none;
@@ -37,34 +49,43 @@ button{
   border:1px solid rgba(255,255,255,.3);
   color:#fff;
 }
-.confetti {
-  position: absolute;
-  width: 10px;
-  height: 10px;
-  opacity: 0.8;
-  pointer-events: none;
-  animation: fall linear forwards;
+.confetti{
+  position:absolute;
+  width:10px;
+  height:10px;
+  opacity:.8;
+  pointer-events:none;
+  animation:fall linear forwards;
 }
-
-@keyframes fall {
-  to {
-    transform: translateY(100vh) rotate(360deg);
-    opacity: 0;
+@keyframes fall{
+  to{
+    transform:translateY(100vh) rotate(360deg);
+    opacity:0;
   }
 }
-
-.credit {
-  position: fixed;
-  bottom: 10px;
-  right: 10px;
-  font-size: 12px;
-  color: rgba(255,255,255,0.6);
-  font-style: italic;
+@keyframes popIn{
+  from{
+    transform:scale(.8);
+    opacity:0;
+  }
+  to{
+    transform:scale(1);
+    opacity:1;
+  }
+}
+.credit{
+  position:fixed;
+  bottom:10px;
+  right:10px;
+  font-size:12px;
+  color:rgba(255,255,255,.6);
+  font-style:italic;
 }
 </style>
 </head>
 
 <body>
+
 <div class="card" id="card">
   <h1>Ioana,</h1>
   <p>vrei să fii partenera mea de Valentine’s Day? 💌</p>
@@ -79,69 +100,63 @@ const noBtn = document.getElementById("noBtn");
 const yesBtn = document.getElementById("yesBtn");
 const card = document.getElementById("card");
 
-// Funcție pentru a verifica suprapunerea butoanelor
-function isOverlapping(noRect, yesRect) {
-  return !(noRect.right < yesRect.left ||
-           noRect.left > yesRect.right ||
-           noRect.bottom < yesRect.top ||
-           noRect.top > yesRect.bottom);
+function isOverlapping(a,b){
+  return !(a.right<b.left || a.left>b.right || a.bottom<b.top || a.top>b.bottom);
 }
 
-// Butonul "Nu" fuge și mărește butonul "Da"
-noBtn.addEventListener("click", () => {
-  // mărire buton "Da"
-  const style = window.getComputedStyle(yesBtn);
-  const currentWidth = parseFloat(style.width);
-  const currentHeight = parseFloat(style.height);
-  yesBtn.style.width = currentWidth * 1.2 + "px";
-  yesBtn.style.height = currentHeight * 1.2 + "px";
+noBtn.addEventListener("click",()=>{
+  const s = getComputedStyle(yesBtn);
+  yesBtn.style.width = parseFloat(s.width)*1.2+"px";
+  yesBtn.style.height = parseFloat(s.height)*1.2+"px";
 
-  // poziționare aleatorie pentru butonul "Nu", fără suprapunere cu "Da"
-  const maxAttempts = 50;
-  let attempts = 0;
-  let placed = false;
+  let placed=false,tries=0;
+  while(!placed && tries<50){
+    const x=Math.random()*(card.clientWidth-noBtn.offsetWidth);
+    const y=Math.random()*(card.clientHeight-noBtn.offsetHeight);
+    noBtn.style.left=x+"px";
+    noBtn.style.top=y+"px";
 
-  while(!placed && attempts < maxAttempts){
-    const maxX = card.clientWidth - noBtn.offsetWidth;
-    const maxY = card.clientHeight - noBtn.offsetHeight;
-    const randX = Math.random() * maxX;
-    const randY = Math.random() * maxY;
-    
-    noBtn.style.left = randX + "px";
-    noBtn.style.top = randY + "px";
+    if(!isOverlapping(
+      noBtn.getBoundingClientRect(),
+      yesBtn.getBoundingClientRect()
+    )) placed=true;
 
-    const noRect = noBtn.getBoundingClientRect();
-    const yesRect = yesBtn.getBoundingClientRect();
-
-    if(!isOverlapping(noRect, yesRect)){
-      placed = true;
-    }
-    attempts++;
+    tries++;
   }
 });
 
-// funcție confetti
 function createConfetti(){
-  const colors = ["#ff2d55","#ff5fa2","#ffca3a","#8ac926","#1982c4"];
-  for(let i=0;i<100;i++){
-    const confetti = document.createElement("div");
-    confetti.classList.add("confetti");
-    confetti.style.backgroundColor = colors[Math.floor(Math.random()*colors.length)];
-    confetti.style.left = Math.random() * window.innerWidth + "px";
-    confetti.style.top = "-20px";
-    confetti.style.width = 5 + Math.random()*10 + "px";
-    confetti.style.height = confetti.style.width;
-    confetti.style.animationDuration = 2 + Math.random()*3 + "s";
-    confetti.style.transform = `rotate(${Math.random()*360}deg)`;
-    document.body.appendChild(confetti);
-    setTimeout(() => confetti.remove(), 5000);
+  const colors=["#ff2d55","#ff5fa2","#ffca3a","#8ac926","#1982c4"];
+  for(let i=0;i<120;i++){
+    const c=document.createElement("div");
+    c.className="confetti";
+    c.style.background=colors[Math.floor(Math.random()*colors.length)];
+    c.style.left=Math.random()*innerWidth+"px";
+    c.style.top="-20px";
+    c.style.width=5+Math.random()*10+"px";
+    c.style.height=c.style.width;
+    c.style.animationDuration=2+Math.random()*3+"s";
+    document.body.appendChild(c);
+    setTimeout(()=>c.remove(),5000);
   }
 }
 
 function accept(){
-  card.innerHTML="<h1>Yeeey! 🥰</h1><p>Te pup sefa mea ❤️</p>";
+  card.innerHTML = `
+    <h1>Yeeey! 🥰</h1>
+    <p>Te pup sefa mea ❤️</p>
+    <img src="Screenshot_4.jpg"
+         style="
+           width:100%;
+           margin-top:20px;
+           border-radius:18px;
+           box-shadow:0 10px 30px rgba(0,0,0,.4);
+           animation:popIn .6s ease-out;
+         ">
+  `;
   createConfetti();
 }
 </script>
+
 </body>
 </html>
