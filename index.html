@@ -24,6 +24,7 @@ button{
   border-radius:12px;font-size:16px;
   transition: all 0.2s ease;
   cursor:pointer;
+  touch-action: manipulation; /* ok pentru telefon */
 }
 .yes{
   border:none;
@@ -40,7 +41,6 @@ button{
   position: absolute;
   width: 10px;
   height: 10px;
-  background-color: #ff2d55;
   opacity: 0.8;
   pointer-events: none;
   animation: fall linear forwards;
@@ -51,6 +51,15 @@ button{
     transform: translateY(100vh) rotate(360deg);
     opacity: 0;
   }
+}
+
+.credit {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  font-size: 12px;
+  color: rgba(255,255,255,0.6);
+  font-style: italic;
 }
 </style>
 </head>
@@ -63,12 +72,22 @@ button{
   <button class="no" id="noBtn">Nu</button>
 </div>
 
+<div class="credit">made by sebi c</div>
+
 <script>
 const noBtn = document.getElementById("noBtn");
 const yesBtn = document.getElementById("yesBtn");
 const card = document.getElementById("card");
 
-// Butonul "Nu" face butonul "Da" mai mare și se mai mișcă puțin haotic
+// Funcție pentru a verifica suprapunerea butoanelor
+function isOverlapping(noRect, yesRect) {
+  return !(noRect.right < yesRect.left ||
+           noRect.left > yesRect.right ||
+           noRect.bottom < yesRect.top ||
+           noRect.top > yesRect.bottom);
+}
+
+// Butonul "Nu" fuge și mărește butonul "Da"
 noBtn.addEventListener("click", () => {
   // mărire buton "Da"
   const style = window.getComputedStyle(yesBtn);
@@ -77,11 +96,28 @@ noBtn.addEventListener("click", () => {
   yesBtn.style.width = currentWidth * 1.2 + "px";
   yesBtn.style.height = currentHeight * 1.2 + "px";
 
-  // mișcare mică a butonului "Nu"
-  const maxX = card.clientWidth - noBtn.offsetWidth;
-  const maxY = card.clientHeight - noBtn.offsetHeight;
-  noBtn.style.left = Math.random() * maxX + "px";
-  noBtn.style.top = Math.random() * maxY + "px";
+  // poziționare aleatorie pentru butonul "Nu", fără suprapunere cu "Da"
+  const maxAttempts = 50;
+  let attempts = 0;
+  let placed = false;
+
+  while(!placed && attempts < maxAttempts){
+    const maxX = card.clientWidth - noBtn.offsetWidth;
+    const maxY = card.clientHeight - noBtn.offsetHeight;
+    const randX = Math.random() * maxX;
+    const randY = Math.random() * maxY;
+    
+    noBtn.style.left = randX + "px";
+    noBtn.style.top = randY + "px";
+
+    const noRect = noBtn.getBoundingClientRect();
+    const yesRect = yesBtn.getBoundingClientRect();
+
+    if(!isOverlapping(noRect, yesRect)){
+      placed = true;
+    }
+    attempts++;
+  }
 });
 
 // funcție confetti
@@ -98,8 +134,6 @@ function createConfetti(){
     confetti.style.animationDuration = 2 + Math.random()*3 + "s";
     confetti.style.transform = `rotate(${Math.random()*360}deg)`;
     document.body.appendChild(confetti);
-
-    // ștergere confetti după animație
     setTimeout(() => confetti.remove(), 5000);
   }
 }
