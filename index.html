@@ -49,7 +49,6 @@ button{
   background:transparent;
   border:1px solid rgba(255,255,255,.3);
   color:#fff;
-  position:absolute;
 }
 .confetti{
   position:absolute;
@@ -122,21 +121,8 @@ function renderQuestion(){
     <h1>${q.title}</h1>
     <p>${q.text}</p>
     <button class="yes" onclick="nextStep()">${q.yes}</button>
-    <button class="no" id="noBtn">${q.no}</button>
+    <button class="no">${q.no}</button>
   `;
-  moveNoButton();
-}
-
-function moveNoButton(){
-  const noBtn = document.getElementById("noBtn");
-  if(!noBtn) return;
-
-  noBtn.addEventListener("click",()=>{
-    const maxX = card.clientWidth - noBtn.offsetWidth;
-    const maxY = card.clientHeight - noBtn.offsetHeight;
-    noBtn.style.left = Math.random()*maxX + "px";
-    noBtn.style.top = Math.random()*maxY + "px";
-  });
 }
 
 function nextStep(){
